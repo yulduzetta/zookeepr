@@ -9,12 +9,12 @@ const path = require("path");
 
 const { animals } = require("./data/animals.json");
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 5000;
 
 // instanditates the server
 const app = express();
 
-/********************** IMPORTANT BEGINS ***********************/
+/********************** MIDDLEWARE BEGINS ***********************/
 // app.use() is a method executed by our Express.js server that
 // mounts a function to the server that our requests will pass through
 // before getting to the intended endpoint.
@@ -35,9 +35,12 @@ app.use(express.urlencoded({ extended: true }));
 // parses it into the req.body JavaScript object.
 app.use(express.json());
 
-// Both of the above middleware functions need to be set up every time
-//you create a server that's looking to accept POST data.
-/********************** IMPORTANT ENDS ***********************/
+// Provided aa filre path (static in this case),
+// and instruct the server to make these files static resources.
+// This means that all of front end code can now be accessed without having
+// a specific server endpoint created for it.
+app.use(express.static("public"));
+/********************** MIDDLEWARE ENDS ***********************/
 
 function filterByQuery(query, animalsArray) {
   let personalityTraitsArray = [];
@@ -133,6 +136,9 @@ function validateAnimal(animal) {
 }
 
 // ***************** ROUTES ***************** //
+// REMEMBER Remember that the order of your routes matter.
+// It's important that this route is added before the * route.
+
 app.get("/api/animals", (req, res) => {
   let results = animals;
   if (req.query) {
@@ -156,7 +162,7 @@ app.post("/api/animals", (req, res) => {
   // req.body is wheere our incoming content will be
   console.log(req.body);
 
-  // set id basedon what the next index of the array will be
+  // set id based on what the next index of the array will be
   req.body.id = animals.length.toString();
 
   // add animal to json file and animals array in this function
@@ -169,6 +175,18 @@ app.post("/api/animals", (req, res) => {
   }
   // sends data back to client
   res.json(animal);
+});
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "./public/index.html"));
+});
+
+app.get("/animals", (req, res) => {
+  res.sendFile(path.join(__dirname, "./public/animals.html"));
+});
+
+app.get("/zookeepers", (req, res) => {
+  res.sendFile(path.join(__dirname, "./public/zookeepers.html"));
 });
 
 // listen for requests
