@@ -67,5 +67,5 @@ app.use(express.static("public"));
 
 // listen for requests
 app.listen(PORT, () => {
-  console.log(`API server now on port ${PORT}!`);
+  console.log(`API server is now on port ${PORT}!`);
 });
